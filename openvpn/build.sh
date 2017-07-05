@@ -26,23 +26,16 @@ source ./vars
 ./build-dh
 openvpn --genkey --secret ./keys/ta.key
 #设置防火墙和路由转发
+
+#设置端口
 port_p=('53' 'udp')
 
-printf "输入监听端口及类型 [53 udp]:"
-read -a port_p
+printf 
+read -a port_p -p "输入监听端口及类型 [53 udp]:"
 if [ ${#port_p[@]} != 2 ]
 then
 	printf "输入错误\n"
 	exit
-fi
-
-#检查sysctl.conf
-sysctl="/etc/sysctl.conf"
-if [ -f "$sysctl" ]
-then	
-	sed -i '/^net.ipv4.ip_forward/c\net.ipv4.ip_forward=1' ${sysctl}
-else
-	echo "net.ipv4.ip_forward=1" >${sysctl}
 fi
 
 #检查版本
@@ -53,10 +46,23 @@ then
 	service iptables save
 	service iptables restart
 else
-	firewall-cmd --permanent --zone=public --add-port=${port[0]}/${port[1]}
-	firewall-cmd --permanent --zone=public --add-masquerade
-	firewall-cmd --permanent --zone=public --add-rich-rule='rule family=ipv4 source address=10.8.0.0/24 masquerade'
-	firewall-cmd --reload
+    printf "此脚本只支持CentOs6\n"
+    exit
+####CentOs7
+#else
+#	firewall-cmd --permanent --zone=public --add-port=${port[0]}/${port[1]}
+#	firewall-cmd --permanent --zone=public --add-masquerade
+#	firewall-cmd --permanent --zone=public --add-rich-rule='rule family=ipv4 source address=10.8.0.0/24 masquerade'
+#	firewall-cmd --reload
+fi
+
+#检查sysctl.conf
+sysctl="/etc/sysctl.conf"
+if [ -s "$sysctl" ]
+then	
+	sed -i '/^net.ipv4.ip_forward/c\net.ipv4.ip_forward=1' ${sysctl}
+else
+	echo "net.ipv4.ip_forward=1" >${sysctl}
 fi
 
 

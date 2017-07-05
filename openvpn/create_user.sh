@@ -10,8 +10,12 @@ fi
 #设置端口等
 port_p=('53' 'udp')
 
-printf "输入监听端口及类型 [53 udp]:"
-read -a port_p
+read -a port_p -p "输入监听端口及类型 [53 udp]:"
+if [ ${#port_p[@]} != 2 ]
+then
+	printf "输入错误\n"
+	exit
+fi
 
 echo  "获取公网ip"
 ip=`curl ip.cip.cc`
