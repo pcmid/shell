@@ -31,17 +31,13 @@ do
 	fi
 	./build-key ${user}
 	printf "client \ndev tun \nproto ${port_p[1]}\nremote ${ip} \nresolv-retry infinite \nnobind \npersist-key \npersist-tun \nns-cert-type server \ncomp-lzo \nverb 3 \ntls-auth [inline] 1 \nsndbuf 0 \nrcvbuf 0 \npush \"dhcp-option DNS 10.8.0.1\" \npush \"dhcp-option WINS 10.8.0.0\" \npush \"redirect-geteway def1\" \n<ca>\n" >${user}.ovpn
-	cat ca.crt >> ${user}.ovpn
-	rm -rf ca.crt
+	cat keys/ca.crt >> ${user}.ovpn
 	printf "</ca>\n<cert>\n" >> ${user}.ovpn
-	cat ${user}.crt >> ${user}.ovpn
-	rm -rf ${user}.crt
+	cat keys/${user}.crt >> ${user}.ovpn
 	printf "</cert>\n<key>\n" >> ${user}.ovpn
-	cat ${user}.key >> ${user}.ovpn
-	rm -rf ${user}.key
+	cat keys/${user}.key >> ${user}.ovpn
 	printf "</key>\n<tls-auth>\n" >> ${user}.ovpn
-	cat ta.key >> ${user}.ovpn
-	rm -rf ta.key
+	cat keys/ta.key >> ${user}.ovpn
 	printf "</tls-auth>" >> ${user}.ovpn
 
 	#结尾
