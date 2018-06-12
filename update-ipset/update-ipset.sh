@@ -30,7 +30,6 @@ declare -A url_map=(
     #中国其他ISP IP地址段：
     #["othernet"]="http://ispip.clang.cn/othernet.html"
     
-    #ispip
     ["ispip"]='-4skL https://ispip.clang.cn/all_cn_cidr.txt'
     ["ip2location"]="-d ipVersion=4&&countryCode[]=CN&&format=cidr&&btnDownload=Download -4skL https://www.ip2location.com/blockvisitorsbycountry.aspx"
 )
