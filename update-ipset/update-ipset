@@ -1,0 +1,74 @@
+#########################################################################
+# File Name: update-ipset.sh
+# Author: pcmid
+# Mail: plzcmid@gmail.com
+# Created Time: 2018年06月13日 星期三 01时08分17秒
+#########################################################################
+#!/bin/bash
+
+# check uid
+if [ $UID -ne 0 ]
+then
+echo "Superuser privileges are required to run this script."
+echo "e.g. \"sudo $0\""
+exit 1
+fi
+
+
+#set urls map (with opetion)
+url="http://ftp.apnic.net/apnic/stats/apnic/delegated-apnic-latest"
+
+#set global path
+ipset_global_path="/etc/ipset.d"
+# set ipset.conf path
+ipset_path="/etc/ipset.conf"
+
+
+#create empty file
+echo "create empty file..."
+echo "" > $ipset_path
+
+# chnip set
+echo "create chnip hash:net" >> ${ipset_path}
+
+# get ip list
+echo "get ip list"
+ip_list=$(wget -qO- ${url} | egrep "apnic\|CN\|ipv4" | cut -d"|" -f4)
+for ip in ${ip_list}
+do
+    # echo ${ip}
+    echo "add chnip ${ip}" >> ${ipset_path}
+done
+
+#extra files
+for file in ${ipset_global_path}/*.conf
+do
+test -r ${file} && cat ${file} >> ${ipset_path}
+done
+# Applying changes
+echo "applying changes..."
+systemctl stop iptables >/dev/null 2>&1
+if [ $? -eq 0 ]
+then
+echo -e "\033[32msystemctl stop iptables\033[0m"
+else
+echo -e "\033[31msystemctl stop iptables\033[0m"
+fi
+ipset -F
+ipset -X
+systemctl restart ipset >/dev/null 2>&1
+if [ $? -eq 0 ]
+then
+echo -e "\033[32msystemctl restart ipset\033[0m"
+else
+echo -e "\033[31msystemctl restart ipset\033[0m"
+fi
+systemctl start iptables >/dev/null 2>&1
+if [ $? -eq 0 ]
+then
+echo -e "\033[32msystemctl start iptables\033[0m"
+else
+echo -e "\033[31msystemctl start iptables\033[0m"
+fi
+
+
